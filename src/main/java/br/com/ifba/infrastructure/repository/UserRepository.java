@@ -10,13 +10,15 @@ import br.com.ifba.infrastructure.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    //  evitar cadastro duplicado
+    // Evitar cadastro duplicado
     boolean existsByEmail(String email);
 
-    // para o login (Spring Security)
+    // Para o login (Spring Security)
     Optional<User> findByEmail(String email);
 
+    // CORREÇÃO: Buscar usuários ativos (SEM parâmetro)
+    List<User> findByActiveTrue();
 
-    // Buscar usuários ativos
-    List<User> findByIsActiveTrue();
+    // Se precisar buscar por status específico, use:
+    // List<User> findByActive(boolean active);
 }

@@ -20,7 +20,7 @@ public class Appointer {
     private LocalDate startDate;
     private LocalDate endDate;
 // enum com os cargos
-    @Enumerated(EnumType.STRING)
+    //@Enumerated(EnumType.STRING) depois mudar para enum
     private boolean status; // PROPOSTA, ATIVA, HISTORICO
 
     // Uma gestão tem vários membros ocupando cargos

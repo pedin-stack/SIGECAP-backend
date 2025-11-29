@@ -6,7 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import br.com.ifba.infrastructure.entity.Attendance;
-
+import br.com.ifba.infrastructure.entity.Event
+        ;
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
@@ -21,5 +22,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     boolean existsByMemberIdAndEventId(Long memberId, Long eventId);
 
     // Contar quantas faltas um membro tem (para estatísticas)
-    long countByMemberIdAndStatus(Long memberId);
+    long countByMemberIdAndStatus(Event event, boolean status);
 }
