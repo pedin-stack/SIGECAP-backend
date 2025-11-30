@@ -82,7 +82,7 @@ public class StringUtil {
         }
     }
 
-    // Verifica se o CNPJ é válido
+    // Verifica se o CNPJ é válidos
     public static boolean isCnpjValido(String cnpj) {
         if (cnpj == null || !cnpj.matches("\\d{14}") || cnpj.chars().distinct().count() == 1)
             return false;
