@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToMany;
 import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.JoinTable;
-
+import br.com.ifba.infrastructure.role.StatusRole;
 
 @Entity
 @Table(name = "event")
@@ -27,12 +27,9 @@ public class Event extends PersistenceEntity {
     private String description;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private boolean status;//provisorio
-
-    // No diagrama aparece eventPics. Assumindo String para URL ou List<String>
+    private StatusRole statusRole;
     private String eventPics;
 
-    // Lista de presença (Agregação com User no diagrama)
     @ManyToMany
     @JoinTable(
             name = "event_attendance",

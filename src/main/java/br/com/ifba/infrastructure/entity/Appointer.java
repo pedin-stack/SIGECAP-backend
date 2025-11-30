@@ -1,34 +1,39 @@
 package br.com.ifba.infrastructure.entity;
 
+import br.com.ifba.infrastructure.entity.persistenceEntity.PersistenceEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import br.com.ifba.infrastructure.role.StatusRole;
+
+
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_appointer")
-@Data
-public class Appointer {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Table(name = "appointer") // Nominata
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Appointer extends PersistenceEntity {
 
     @Column(nullable = false)
-    private String managementName; // Ex: "Gestão 2025.1 - Fênix"
+    private String description;
 
+    @Column(nullable = false)
     private LocalDate startDate;
-    private LocalDate endDate;
-// enum com os cargos
-    //@Enumerated(EnumType.STRING) depois mudar para enum
-    private boolean status; // PROPOSTA, ATIVA, HISTORICO
 
-    // Uma gestão tem vários membros ocupando cargos
-    @ManyToMany
-    @JoinTable(
-            name = "tb_appointer_members",
-            joinColumns = @JoinColumn(name = "appointer_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> managementMembers;
+    @Column(nullable = false)
+    private LocalDate endDate;
+
+    @Column(nullable = false)
+    private double financialGoal;
+
+    @Column(nullable = false)
+    private StatusRole statusRole;
+
+    // Em vez de 'private User scribe', 'private User treasurer'...
+    // Temos uma lista de membros com seus cargos:
+    @OneToMany(mappedBy = "appointer", cascade = CascadeType.ALL)
+    private List<AppointerMember> members;
 }

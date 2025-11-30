@@ -26,8 +26,7 @@ public class Person extends PersistenceEntity {
     private LocalDate birthDate;
     private String contact;
 
-    // Relação com Address vinda do diagrama
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "address_id")
     private Address address;
 }
