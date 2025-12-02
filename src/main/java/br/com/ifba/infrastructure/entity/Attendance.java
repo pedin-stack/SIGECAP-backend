@@ -1,5 +1,6 @@
 package br.com.ifba.infrastructure.entity;
 
+import br.com.ifba.infrastructure.role.StatusRole;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,8 +21,9 @@ public class Attendance {
     @JoinColumn(name = "member_id", nullable = false)
     private User member;
 
-    //@Enumerated(EnumType.STRING)
-    private boolean status; // depois mudar para o enum PRESENTE, AUSENTE, JUSTIFICADO
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    StatusRole status;
 
     @Column(length = 500)
     private String justification; // Texto opcional

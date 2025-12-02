@@ -1,50 +1,53 @@
 package br.com.ifba.infrastructure.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import br.com.ifba.infrastructure.entity.MonthlyDues;
-import java.util.ArrayList;
+import br.com.ifba.infrastructure.service.MonthlyDuesService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/api/monthly-dues")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor // Injeção de dependência limpa via Lombok
 public class MonthlyDuesController {
 
-    private final List<MonthlyDues> duesList = new ArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private final MonthlyDuesService monthlyDuesService;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<MonthlyDues>> getDuesByUser(@PathVariable Long userId) {
-        // Filtra na lista em memória pelo ID do usuário (simulado)
-        List<MonthlyDues> userDues = duesList.stream()
-                .filter(d -> d.getMember() != null && d.getMember().getId().equals(userId))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDues);
+    //Listar Todos
+    @GetMapping
+    public ResponseEntity<List<MonthlyDues>> findAll() {
+        return ResponseEntity.ok(monthlyDuesService.findAll());
     }
 
+    // Buscar por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<MonthlyDues> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(monthlyDuesService.findById(id));
+    }
+
+    // POST - Criar (Status 201)
     @PostMapping
-    public ResponseEntity<MonthlyDues> createDue(@RequestBody MonthlyDues due) {
-        due.setId(idCounter.getAndIncrement());
-        // due.setStatus(DuesStatus.PENDENTE);
-        duesList.add(due);
-        return ResponseEntity.status(201).body(due);
+    public ResponseEntity<MonthlyDues> save(@RequestBody MonthlyDues monthlyDues) {
+        MonthlyDues savedDues = monthlyDuesService.save(monthlyDues);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedDues);
     }
 
-    @PutMapping("/{id}/pay")
-    public ResponseEntity<MonthlyDues> registerPayment(@PathVariable Long id) {
-        Optional<MonthlyDues> dueOpt = duesList.stream()
-                .filter(d -> d.getId().equals(id))
-                .findFirst();
+    // PUT - Atualizar (Status 200)
+    @PutMapping("/{id}")
+    public ResponseEntity<MonthlyDues> update(@PathVariable Long id, @RequestBody MonthlyDues monthlyDues) {
+        monthlyDues.setId(id);
+        MonthlyDues updatedDues = monthlyDuesService.save(monthlyDues);
+        return ResponseEntity.ok(updatedDues);
+    }
 
-        if (dueOpt.isPresent()) {
-            MonthlyDues due = dueOpt.get();
-            // due.setStatus(DuesStatus.PAGO);
-            return ResponseEntity.ok(due);
-        }
-        return ResponseEntity.notFound().build();
+    // DELETE - Deletar (Status 204)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        monthlyDuesService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

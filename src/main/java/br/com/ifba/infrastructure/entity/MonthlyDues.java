@@ -1,9 +1,6 @@
 package br.com.ifba.infrastructure.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,12 +13,18 @@ import br.com.ifba.infrastructure.entity.persistenceEntity.PersistenceEntity;
 @AllArgsConstructor @NoArgsConstructor
 public class MonthlyDues extends PersistenceEntity {
 
+    @Column(nullable = false)
     private double value;
+
+    @Column(nullable = false)
     private int referenceMonth;
+
+    @Column(nullable = false)
     private int referenceYear;
+
+    @Column(nullable = false)
     private String status;
 
-    // Relação com User (Composição no diagrama)
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User member;

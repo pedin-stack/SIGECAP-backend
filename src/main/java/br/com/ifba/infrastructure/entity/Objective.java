@@ -1,9 +1,7 @@
 package br.com.ifba.infrastructure.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,8 +16,13 @@ import br.com.ifba.infrastructure.entity.persistenceEntity.PersistenceEntity;
 @AllArgsConstructor @NoArgsConstructor
 public class Objective extends PersistenceEntity {
 
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private double financialGoal;
+
+    @Column(nullable = false)
     private LocalDate deadline;
 
     // Relação com User (Associação no diagrama)

@@ -1,0 +1,61 @@
+package br.com.ifba.infrastructure.service;
+
+import br.com.ifba.infrastructure.entity.Address;
+import br.com.ifba.infrastructure.repository.AddressRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+
+@Service
+@Slf4j //para adicionar o log depois
+@RequiredArgsConstructor
+public class AddressService {
+
+    private final AddressRepository addressRepository;
+
+    @Transactional
+    public Address save(Address address) {
+        if (address.getCep() == null || address.getCep().isEmpty()) {
+            throw new RuntimeException("O CEP é obrigatório.");
+        }
+        return addressRepository.save(address);
+    }
+
+    public List<Address> findAll() {
+        return addressRepository.findAll();
+    }
+
+    public Address findById(Long id) {
+        return addressRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Endereço não encontrado com o ID: " + id));
+    }
+
+
+    @Transactional
+    public Address update(Long id, Address addressUpdated) {
+
+        Address existingAddress = findById(id);
+
+        existingAddress.setStreet(addressUpdated.getStreet());
+        existingAddress.setNumber(addressUpdated.getNumber());
+        existingAddress.setNeighborhood(addressUpdated.getNeighborhood());
+        existingAddress.setCity(addressUpdated.getCity());
+        existingAddress.setState(addressUpdated.getState());
+        existingAddress.setCep(addressUpdated.getCep());
+
+        return addressRepository.save(existingAddress);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+
+        if (!addressRepository.existsById(id)) {
+            throw new RuntimeException("Não é possível deletar. Endereço não encontrado com o ID: " + id);
+        }
+        addressRepository.deleteById(id);
+    }
+}

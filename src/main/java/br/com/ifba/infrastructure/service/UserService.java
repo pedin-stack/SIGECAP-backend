@@ -1,17 +1,18 @@
 package br.com.ifba.infrastructure.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import br.com.ifba.infrastructure.entity.User;
 import br.com.ifba.infrastructure.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-
+    private final UserRepository userRepository;
 
     public List<User> findAll() {
         return userRepository.findAll();
@@ -19,36 +20,40 @@ public class UserService {
 
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
     }
 
+    @Transactional
     public User save(User user) {
-        // Regra: Validar se o e-mail já existe
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("E-mail já cadastrado.");
+
+        if (user.getId() == null) {
+            user.setIsactive(true);
         }
-
-        //user.setIsActive(true);
-
         return userRepository.save(user);
     }
 
-    public User update(Long id, User userUpdated) {
-        User existingUser = findById(id);
 
-        // Atualiza apenas campos permitidos
-        existingUser.setEmail(userUpdated.getEmail());
-       // existingUser.setProfile(userUpdated.getProfile());
-        existingUser.setName(userUpdated.getName());
-        existingUser.setAddress(userUpdated.getAddress());
+    @Transactional
+    public void delete(Long id) {
 
-        return userRepository.save(existingUser);
+        User user = findById(id);
+
+
+        user.setIsactive(false);
+
+        userRepository.save(user);
     }
 
-    public void delete(Long id) {
-        // Regra: Soft delete (desativação) é preferível a apagar do banco para manter histórico
-        User user = findById(id);
-        //user.setIsActive(false);
-        userRepository.save(user);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o email: " + email));
+    }
+
+    public List<User> findByStatus(boolean status) {
+        return userRepository.findByIsactive(status);
+    }
+
+    public List<User> findByUserType(Long typeId) {
+        return userRepository.findByUserTypeId(typeId);
     }
 }

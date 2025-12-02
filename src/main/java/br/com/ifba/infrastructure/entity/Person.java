@@ -1,12 +1,7 @@
 package br.com.ifba.infrastructure.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,9 +16,16 @@ import br.com.ifba.infrastructure.entity.persistenceEntity.PersistenceEntity;
 @AllArgsConstructor @NoArgsConstructor
 public class Person extends PersistenceEntity {
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String cpf;
+
+    @Column(nullable = false)
     private LocalDate birthDate;
+
+    @Column(nullable = false)
     private String contact;
 
     @OneToOne

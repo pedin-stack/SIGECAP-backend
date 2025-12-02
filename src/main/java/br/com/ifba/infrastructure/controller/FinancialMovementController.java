@@ -1,47 +1,67 @@
 package br.com.ifba.infrastructure.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import br.com.ifba.infrastructure.entity.FinancialMovement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import br.com.ifba.infrastructure.service.FinancialMovementService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/financial-movements")
 @CrossOrigin(origins = "http://localhost:3000")
 public class FinancialMovementController {
 
-    private final List<FinancialMovement> movements = new ArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private final FinancialMovementService financialMovementService;
 
     @GetMapping
-    public ResponseEntity<List<FinancialMovement>> getAllMovements() {
-        return ResponseEntity.ok(movements);
+    public ResponseEntity<List<FinancialMovement>> findAll() {
+        return ResponseEntity.ok(financialMovementService.findAll());
     }
 
+    // Buscar por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<FinancialMovement> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(financialMovementService.findById(id));
+    }
+
+    //Criar (Status 201 Created)
     @PostMapping
-    public ResponseEntity<FinancialMovement> createMovement(@RequestBody FinancialMovement movement) {
-        movement.setId(idCounter.getAndIncrement());
-        // Simula status inicial
-        // movement.setStatus(FinancialStatus.PENDENTE);
-        movements.add(movement);
-        return ResponseEntity.status(201).body(movement);
+    public ResponseEntity<FinancialMovement> save(@RequestBody FinancialMovement movement) {
+        FinancialMovement savedMovement = financialMovementService.save(movement);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedMovement);
     }
 
-    @PutMapping("/{id}/approve")
-    public ResponseEntity<FinancialMovement> approveMovement(@PathVariable Long id) {
-        Optional<FinancialMovement> movOpt = movements.stream()
-                .filter(m -> m.getId().equals(id))
-                .findFirst();
+    // Atualizar (Status 200 OK)
+    @PutMapping("/{id}")
+    public ResponseEntity<FinancialMovement> update(@PathVariable Long id, @RequestBody FinancialMovement movement) {
+        movement.setId(id);
+        FinancialMovement updatedMovement = financialMovementService.save(movement);
+        return ResponseEntity.ok(updatedMovement);
+    }
 
-        if (movOpt.isPresent()) {
-            FinancialMovement mov = movOpt.get();
-            // Simula aprovação
-            // mov.setStatus(FinancialStatus.APROVADO);
-            return ResponseEntity.ok(mov);
-        }
-        return ResponseEntity.notFound().build();
+    // DELETE - Deletar (Status 204 No Content)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        financialMovementService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Buscar por Dat
+    @GetMapping("/search/date")
+    public ResponseEntity<List<FinancialMovement>> findByDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+        return ResponseEntity.ok(financialMovementService.findByDate(date));
+    }
+
+    // Buscar por Valor
+    @GetMapping("/search/value")
+    public ResponseEntity<List<FinancialMovement>> findByValue(@RequestParam("value") double value) {
+        return ResponseEntity.ok(financialMovementService.findByValue(value));
     }
 }

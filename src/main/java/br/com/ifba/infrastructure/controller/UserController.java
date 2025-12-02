@@ -1,65 +1,74 @@
 package br.com.ifba.infrastructure.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import br.com.ifba.infrastructure.entity.User;
-import java.util.ArrayList;
+import br.com.ifba.infrastructure.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor // Injeção automática via Lombok
 public class UserController {
 
-    // Simula o Banco de Dados em Memória
-    private final List<User> users = new ArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private final UserService userService;
 
+    // GET - Listar Todos
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<User>> findAll() {
+        return ResponseEntity.ok(userService.findAll());
     }
 
+    // GET - Buscar por ID
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<User> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
+    //  Criar (Status 201)
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        user.setId(idCounter.getAndIncrement()); // Gera ID automático
-        // Simula regra básica: Ativar usuário ao criar
-        user.setActive(true);
-        users.add(user);
-        return ResponseEntity.status(201).body(user);
+    public ResponseEntity<User> save(@RequestBody User user) {
+        User savedUser = userService.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
+    // Atualizar (Status 200)
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userUpdated) {
-        Optional<User> existingUserOpt = users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
 
-        if (existingUserOpt.isPresent()) {
-            User existingUser = existingUserOpt.get();
-            // Atualiza campos (Exemplo simples)
-            existingUser.setEmail(userUpdated.getEmail());
-            existingUser.setPassword(userUpdated.getPassword());
-            existingUser.setName(userUpdated.getName());
-            return ResponseEntity.ok(existingUser);
-        }
-        return ResponseEntity.notFound().build();
+        user.setId(id);
+        User updatedUser = userService.save(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
+    //eletar (Exclusão Lógica / Soft Delete) - Status 204
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        users.removeIf(u -> u.getId().equals(id));
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+        userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Buscar por Email
+
+    @GetMapping("/search/email")
+    public ResponseEntity<User> findByEmail(@RequestParam("email") String email) {
+        return ResponseEntity.ok(userService.findByEmail(email));
+    }
+
+    // Buscar por Status (Ativo/Inativo)
+
+    @GetMapping("/search/status")
+    public ResponseEntity<List<User>> findByStatus(@RequestParam("active") boolean active) {
+        return ResponseEntity.ok(userService.findByStatus(active));
+    }
+
+    @GetMapping("/search/type")
+    public ResponseEntity<List<User>> findByUserType(@RequestParam("typeId") Long typeId) {
+        return ResponseEntity.ok(userService.findByUserType(typeId));
     }
 }

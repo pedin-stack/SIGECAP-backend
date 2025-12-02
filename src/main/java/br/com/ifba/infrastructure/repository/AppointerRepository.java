@@ -1,19 +1,26 @@
 package br.com.ifba.infrastructure.repository;
 
+import br.com.ifba.infrastructure.entity.Appointer;
+import br.com.ifba.infrastructure.role.DeMolayRole;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-
-import br.com.ifba.infrastructure.entity.Appointer;
 
 @Repository
 public interface AppointerRepository extends JpaRepository<Appointer, Long> {
 
-    // Encontrar a gestão atualmente ATIVA (Para exibir na Home quem é o MC atual)
-    Optional<Appointer> findByStatus(boolean status);
+    List<Appointer> findByStartDate(LocalDate startDate);
 
-    // Listar todas ordenadas da mais recente para a mais antiga (Histórico)
-    List<Appointer> findAllByOrderByStartDateDesc();
+    List<Appointer> findByEndDate(LocalDate endDate);
+
+    /* 3. Encontrar uma Nominata onde um membro específico teve um cargo específico
+     Explicação: Selecione a Nominata (a) juntando com seus membros (m)
+     onde o ID do usuário é X e o Cargo é Y.*/
+    @Query("SELECT a FROM Appointer a JOIN a.members m WHERE m.user.id = :userId AND m.role = :role")
+    List<Appointer> findByMemberAndRole(@Param("userId") Long userId,
+                                        @Param("role") DeMolayRole role);
 }

@@ -1,45 +1,87 @@
 package br.com.ifba.infrastructure.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import br.com.ifba.infrastructure.entity.Appointer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import br.com.ifba.infrastructure.role.StatusRole;
+import br.com.ifba.infrastructure.role.DeMolayRole;
+import br.com.ifba.infrastructure.service.AppointerService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/appointers")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/appointers") // Define a rota base
+@CrossOrigin(origins = "http://localhost:3000") // Permite integração com o React
 public class AppointerController {
 
-    private final List<Appointer> appointers = new ArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private final AppointerService appointerService;
 
+    //  listar todos
     @GetMapping
-    public ResponseEntity<List<Appointer>> getAllNominatas() {
-        return ResponseEntity.ok(appointers);
+    public ResponseEntity<List<Appointer>> findAll() {
+        return ResponseEntity.ok(appointerService.findAll());
+    }
+
+    // buscar por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Appointer> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(appointerService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Appointer> createNominata(@RequestBody Appointer appointer) {
-        appointer.setId(idCounter.getAndIncrement());
-        // appointer.setStatus(AppointerStatus.PROPOSTA);
-        appointers.add(appointer);
-        return ResponseEntity.status(201).body(appointer);
+    public ResponseEntity<Appointer> save(@RequestBody Appointer appointer) {
+        Appointer savedAppointer = appointerService.save(appointer);
+        // Retorna Status 201 (Created)
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAppointer);
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Appointer> updateStatus(@PathVariable Long id, @RequestBody String newStatus) {
-        Optional<Appointer> appOpt = appointers.stream()
-                .filter(a -> a.getId().equals(id))
-                .findFirst();
+    // Slide 15: @PutMapping para atualizar recursos
+    @PutMapping("/{id}")
+    public ResponseEntity<Appointer> update(@PathVariable Long id, @RequestBody Appointer appointer) {
+        // Garante que o ID do corpo da requisição seja o mesmo da URL
+        appointer.setId(id);
+        Appointer updatedAppointer = appointerService.save(appointer);
+        return ResponseEntity.ok(updatedAppointer);
+    }
 
-        if (appOpt.isPresent()) {
-            // Em um cenário real converteriamos a string para Enum
-            // appOpt.get().setStatus(AppointerStatus.valueOf(newStatus));
-            return ResponseEntity.ok(appOpt.get());
-        }
-        return ResponseEntity.notFound().build();
+    // retorno NO_CONTENT
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        appointerService.delete(id);
+        // Retorna 204 No Content (Sucesso sem corpo de resposta)
+        return ResponseEntity.noContent().build();
+    }
+
+    // Endpoint para atualizar apenas o status (ex: ATIVA para HISTORICO)
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Appointer> updateStatus(@PathVariable Long id, @RequestBody StatusRole newStatus) {
+        return ResponseEntity.ok(appointerService.updateStatus(id, newStatus));
+    }
+
+    // Buscar por Data de Início
+    @GetMapping("/search/start-date")
+    public ResponseEntity<List<Appointer>> findByStartDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(appointerService.findByStartDate(date));
+    }
+
+    // Buscar por Data de Término
+    @GetMapping("/search/end-date")
+    public ResponseEntity<List<Appointer>> findByEndDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(appointerService.findByEndDate(date));
+    }
+
+    // Buscar onde um membro teve um cargo específico
+    @GetMapping("/search/member-role")
+    public ResponseEntity<List<Appointer>> findByMemberAndRole(
+            @RequestParam("userId") Long userId,
+            @RequestParam("role") DeMolayRole role) {
+        return ResponseEntity.ok(appointerService.findByMemberAndRole(userId, role));
     }
 }

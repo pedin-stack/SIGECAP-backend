@@ -1,11 +1,7 @@
 package br.com.ifba.infrastructure.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,11 +18,15 @@ import lombok.Setter;
 @AllArgsConstructor @NoArgsConstructor
 public class User extends Person {
 
+    @Column(nullable = false)
     private String email;
-    private String password;
-    private boolean active;
 
-    // Associações diretas do diagrama
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private boolean isactive;
+
     @ManyToOne
     @JoinColumn(name = "user_type_id")
     private UserType userType;

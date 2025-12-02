@@ -32,8 +32,7 @@ public class Appointer extends PersistenceEntity {
     @Column(nullable = false)
     private StatusRole statusRole;
 
-    // Em vez de 'private User scribe', 'private User treasurer'...
     // Temos uma lista de membros com seus cargos:
-    @OneToMany(mappedBy = "appointer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "appointer")
     private List<AppointerMember> members;
 }

@@ -1,43 +1,42 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.MonthlyDues;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.ifba.infrastructure.repository.MonthlyDuesRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
-import br.com.ifba.infrastructure.repository.MonthlyDuesRepository;
 @Service
+@RequiredArgsConstructor
 public class MonthlyDuesService {
 
-    @Autowired
-    private MonthlyDuesRepository duesRepository;
+    private final MonthlyDuesRepository monthlyDuesRepository;
 
-    public List<MonthlyDues> findByUser(Long userId) {
-        return duesRepository.findByMemberId(userId);
+    // Listar todos
+    public List<MonthlyDues> findAll() {
+        return monthlyDuesRepository.findAll();
     }
 
-    public MonthlyDues save(MonthlyDues due) {
-        // Verificar se já existe mensalidade para aquele mês/ano e usuário
-        boolean exists = duesRepository.existsByMemberIdAndReferenceMonthAndReferenceYear(
-                due.getMember().getId(), due.getReferenceMonth(), due.getReferenceYear());
+    // Buscar por ID
+    public MonthlyDues findById(Long id) {
+        return monthlyDuesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mensalidade não encontrada com ID: " + id));
+    }
 
-        if (exists) {
-            throw new RuntimeException("Mensalidade já gerada para este período.");
+    // Salvar (Criar ou Atualizar)
+    @Transactional
+    public MonthlyDues save(MonthlyDues monthlyDues) {
+        return monthlyDuesRepository.save(monthlyDues);
+    }
+
+    // Deletar
+    @Transactional
+    public void delete(Long id) {
+        if (!monthlyDuesRepository.existsById(id)) {
+            throw new RuntimeException("Mensalidade não encontrada para exclusão.");
         }
-
-     //   due.setStatus(DuesStatus.PENDENTE);
-        return duesRepository.save(due);
-    }
-
-    public MonthlyDues registerPayment(Long id) {
-        MonthlyDues due = duesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Mensalidade não encontrada"));
-
-      //  due.setStatus(DuesStatus.PAGO);
-        // due.setPaymentDate(LocalDateTime.now());
-
-        return duesRepository.save(due);
+        monthlyDuesRepository.deleteById(id);
     }
 }
