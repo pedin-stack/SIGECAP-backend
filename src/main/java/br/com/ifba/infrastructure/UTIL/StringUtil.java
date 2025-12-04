@@ -58,28 +58,28 @@ public class StringUtil {
 
     // Verifica se o CPF é válido
     public static boolean isCpfValido(String cpf) {
-        if (cpf == null || !cpf.matches("\\d{11}") || cpf.chars().distinct().count() == 1)
-            return false;
+            if (cpf == null || !cpf.matches("\\d{11}") || cpf.chars().distinct().count() == 1)
+                return false;
 
-        try {
-            int d1 = 0, d2 = 0;
-            for (int i = 0; i < 9; i++) {
-                int digito = Character.getNumericValue(cpf.charAt(i));
-                d1 += digito * (10 - i);
-                d2 += digito * (11 - i);
+            try {
+                int d1 = 0, d2 = 0;
+                for (int i = 0; i < 9; i++) {
+                    int digito = Character.getNumericValue(cpf.charAt(i));
+                    d1 += digito * (10 - i);
+                    d2 += digito * (11 - i);
+                }
+
+                int check1 = 11 - (d1 % 11);
+                check1 = (check1 > 9) ? 0 : check1;
+                d2 += check1 * 2;
+                int check2 = 11 - (d2 % 11);
+                check2 = (check2 > 9) ? 0 : check2;
+
+                return check1 == Character.getNumericValue(cpf.charAt(9)) &&
+                        check2 == Character.getNumericValue(cpf.charAt(10));
+            } catch (Exception e) {
+                return false;
             }
-
-            int check1 = 11 - (d1 % 11);
-            check1 = (check1 > 9) ? 0 : check1;
-            d2 += check1 * 2;
-            int check2 = 11 - (d2 % 11);
-            check2 = (check2 > 9) ? 0 : check2;
-
-            return check1 == Character.getNumericValue(cpf.charAt(9)) &&
-                    check2 == Character.getNumericValue(cpf.charAt(10));
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     // Verifica se o CNPJ é válidos

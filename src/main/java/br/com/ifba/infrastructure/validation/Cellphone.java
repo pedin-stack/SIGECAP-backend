@@ -1,0 +1,15 @@
+package br.com.ifba.infrastructure.validation;
+
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
+import java.lang.annotation.*;
+
+@Documented
+@Constraint(validatedBy = CellphoneValidator.class)
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Cellphone {
+    String message() default "Telefone inválido";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+}
