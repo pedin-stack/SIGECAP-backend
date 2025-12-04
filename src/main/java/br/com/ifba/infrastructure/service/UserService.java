@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import br.com.ifba.infrastructure.exception.BusinessException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class UserService {
 
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado com ID: " + id));
     }
 
     @Transactional
@@ -35,18 +36,15 @@ public class UserService {
 
     @Transactional
     public void delete(Long id) {
-
-        User user = findById(id);
-
-
+       //SOFT DELETE
+        User user = findById(id); // O findById já lança BusinessException se não achar
         user.setIsactive(false);
-
         userRepository.save(user);
     }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o email: " + email));
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado com o email: " + email));
     }
 
     public List<User> findByStatus(boolean status) {
