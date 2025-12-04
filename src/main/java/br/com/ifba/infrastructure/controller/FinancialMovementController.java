@@ -1,8 +1,12 @@
 package br.com.ifba.infrastructure.controller;
 
+import br.com.ifba.infrastructure.dto.FinancialMovementRequestDTO;
+import br.com.ifba.infrastructure.dto.FinancialMovementResponseDTO;
 import br.com.ifba.infrastructure.entity.FinancialMovement;
+import br.com.ifba.infrastructure.entity.User;
 import br.com.ifba.infrastructure.service.FinancialMovementService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,50 +23,94 @@ import java.util.List;
 public class FinancialMovementController {
 
     private final FinancialMovementService financialMovementService;
+    private final ModelMapper modelMapper;
 
+    // =================================================================================
+    // CONVERSORES
+    // =================================================================================
+
+    private FinancialMovementResponseDTO toDto(FinancialMovement entity) {
+        // O ModelMapper mapeia responsible.name -> responsibleName automaticamente
+        return modelMapper.map(entity, FinancialMovementResponseDTO.class);
+    }
+
+    private FinancialMovement toEntity(FinancialMovementRequestDTO dto) {
+        FinancialMovement entity = modelMapper.map(dto, FinancialMovement.class);
+
+        // Mapeamento manual do relacionamento com User (Responsável)
+        if (dto.getResponsibleId() != null) {
+            User userStub = new User();
+            userStub.setId(dto.getResponsibleId());
+            entity.setResponsible(userStub);
+        }
+
+        return entity;
+    }
+
+    // =================================================================================
+    // CRUD
+    // =================================================================================
+
+    // Listar Todos
     @GetMapping
-    public ResponseEntity<List<FinancialMovement>> findAll() {
-        return ResponseEntity.ok(financialMovementService.findAll());
+    public ResponseEntity<List<FinancialMovementResponseDTO>> findAll() {
+        List<FinancialMovement> list = financialMovementService.findAll();
+        List<FinancialMovementResponseDTO> dtos = list.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     // Buscar por ID
     @GetMapping("/{id}")
-    public ResponseEntity<FinancialMovement> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(financialMovementService.findById(id));
+    public ResponseEntity<FinancialMovementResponseDTO> findById(@PathVariable Long id) {
+        FinancialMovement entity = financialMovementService.findById(id);
+        return ResponseEntity.ok(toDto(entity));
     }
 
-    //Criar (Status 201 Created)
+    // Criar
     @PostMapping
-    public ResponseEntity<FinancialMovement> save(@RequestBody FinancialMovement movement) {
-        FinancialMovement savedMovement = financialMovementService.save(movement);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedMovement);
+    public ResponseEntity<FinancialMovementResponseDTO> save(@RequestBody FinancialMovementRequestDTO dto) {
+        FinancialMovement entity = toEntity(dto);
+        FinancialMovement saved = financialMovementService.save(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(saved));
     }
 
-    // Atualizar (Status 200 OK)
+    // Atualizar
     @PutMapping("/{id}")
-    public ResponseEntity<FinancialMovement> update(@PathVariable Long id, @RequestBody FinancialMovement movement) {
-        movement.setId(id);
-        FinancialMovement updatedMovement = financialMovementService.save(movement);
-        return ResponseEntity.ok(updatedMovement);
+    public ResponseEntity<FinancialMovementResponseDTO> update(@PathVariable Long id, @RequestBody FinancialMovementRequestDTO dto) {
+        FinancialMovement entity = toEntity(dto);
+        entity.setId(id); // Garante consistência
+
+        FinancialMovement updated = financialMovementService.save(entity);
+        return ResponseEntity.ok(toDto(updated));
     }
 
-    // DELETE - Deletar (Status 204 No Content)
+    // Deletar
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         financialMovementService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Buscar por Dat
+    // =================================================================================
+    // BUSCAS ESPECÍFICAS
+    // =================================================================================
+
+    // Buscar por Data
     @GetMapping("/search/date")
-    public ResponseEntity<List<FinancialMovement>> findByDate(
+    public ResponseEntity<List<FinancialMovementResponseDTO>> findByDate(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-        return ResponseEntity.ok(financialMovementService.findByDate(date));
+        List<FinancialMovement> list = financialMovementService.findByDate(date);
+        List<FinancialMovementResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     // Buscar por Valor
     @GetMapping("/search/value")
-    public ResponseEntity<List<FinancialMovement>> findByValue(@RequestParam("value") double value) {
-        return ResponseEntity.ok(financialMovementService.findByValue(value));
+    public ResponseEntity<List<FinancialMovementResponseDTO>> findByValue(@RequestParam("value") double value) {
+        List<FinancialMovement> list = financialMovementService.findByValue(value);
+        List<FinancialMovementResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 }

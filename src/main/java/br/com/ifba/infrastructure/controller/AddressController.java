@@ -1,55 +1,83 @@
 package br.com.ifba.infrastructure.controller;
 
+import br.com.ifba.infrastructure.dto.AddressRequestDTO;
+import br.com.ifba.infrastructure.dto.AddressResponseDTO;
 import br.com.ifba.infrastructure.entity.Address;
 import br.com.ifba.infrastructure.service.AddressService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/addresses") // Define a rota base no plural
-@CrossOrigin(origins = "http://localhost:3000") // Permite acesso do React
+@RequestMapping("/api/addresses")
+@CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class AddressController {
 
     private final AddressService addressService;
+    private final ModelMapper modelMapper; // Injeção do Mapper
 
-    //  listar todos os endereços
+    private AddressResponseDTO toDto(Address address) {
+        return modelMapper.map(address, AddressResponseDTO.class);
+    }
+
+    private Address toEntity(AddressRequestDTO dto) {
+        return modelMapper.map(dto, Address.class);
+    }
+
+    // Listar todos
     @GetMapping
-    public ResponseEntity<List<Address>> findAll() {
-        return ResponseEntity.ok(addressService.findAll());
+    public ResponseEntity<List<AddressResponseDTO>> findAll() {
+        List<Address> addresses = addressService.findAll();
+
+        // Converte a lista de Entidades para lista de DTOs
+        List<AddressResponseDTO> dtos = addresses.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 
-    //  buscar um endereço específico por ID
+    // Buscar por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Address> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(addressService.findById(id));
+    public ResponseEntity<AddressResponseDTO> findById(@PathVariable Long id) {
+        Address address = addressService.findById(id);
+        return ResponseEntity.ok(toDto(address));
     }
 
-    //  criar um novo endereço
+    // Criar
     @PostMapping
-    public ResponseEntity<Address> save(@RequestBody Address address) {
-        Address savedAddress = addressService.save(address);
-        // Retorna Status 201 (Created) indicando que o recurso foi criado com sucesso
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
+    public ResponseEntity<AddressResponseDTO> save(@RequestBody AddressRequestDTO dto) {
+        // 1. DTO -> Entity
+        Address addressEntity = toEntity(dto);
+
+        // 2. Service salva
+        Address savedAddress = addressService.save(addressEntity);
+
+        // 3. Entity -> DTO
+        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(savedAddress));
     }
 
-    // atualizar um endereço existente
+    // Atualizar
     @PutMapping("/{id}")
-    public ResponseEntity<Address> update(@PathVariable Long id, @RequestBody Address address) {
+    public ResponseEntity<AddressResponseDTO> update(@PathVariable Long id, @RequestBody AddressRequestDTO dto) {
+        Address addressEntity = toEntity(dto);
 
-        Address updatedAddress = addressService.update(id, address);
-        // Retorna 200 OK com o objeto atualizado
-        return ResponseEntity.ok(updatedAddress);
+        // Opção A: Se o seu service for: update(Long id, Address entity)
+        Address updatedAddress = addressService.update(id, addressEntity);
+
+        return ResponseEntity.ok(toDto(updatedAddress));
     }
 
+    // Deletar (Não muda nada, pois não tem corpo)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         addressService.delete(id);
-        // Retorna 204 No Content (Sucesso, sem corpo de resposta)
         return ResponseEntity.noContent().build();
     }
 }

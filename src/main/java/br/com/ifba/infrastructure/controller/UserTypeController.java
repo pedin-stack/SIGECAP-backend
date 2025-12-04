@@ -1,13 +1,17 @@
 package br.com.ifba.infrastructure.controller;
 
+import br.com.ifba.infrastructure.dto.UserTypeRequestDTO;
+import br.com.ifba.infrastructure.dto.UserTypeResponseDTO;
 import br.com.ifba.infrastructure.entity.UserType;
 import br.com.ifba.infrastructure.service.UserTypeService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user-types")
@@ -16,33 +20,57 @@ import java.util.List;
 public class UserTypeController {
 
     private final UserTypeService userTypeService;
+    private final ModelMapper modelMapper;
 
+    // =================================================================================
+    // CONVERSORES
+    // =================================================================================
+
+    private UserTypeResponseDTO toDto(UserType entity) {
+        return modelMapper.map(entity, UserTypeResponseDTO.class);
+    }
+
+    private UserType toEntity(UserTypeRequestDTO dto) {
+        return modelMapper.map(dto, UserType.class);
+    }
+
+    // =================================================================================
+    // CRUD
+    // =================================================================================
 
     // GET - Listar Todos
     @GetMapping
-    public ResponseEntity<List<UserType>> findAll() {
-        return ResponseEntity.ok(userTypeService.findAll());
+    public ResponseEntity<List<UserTypeResponseDTO>> findAll() {
+        List<UserType> list = userTypeService.findAll();
+        List<UserTypeResponseDTO> dtos = list.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     // GET - Buscar por ID
     @GetMapping("/{id}")
-    public ResponseEntity<UserType> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(userTypeService.findById(id));
+    public ResponseEntity<UserTypeResponseDTO> findById(@PathVariable Long id) {
+        UserType entity = userTypeService.findById(id);
+        return ResponseEntity.ok(toDto(entity));
     }
 
     // POST - Criar (Status 201)
     @PostMapping
-    public ResponseEntity<UserType> save(@RequestBody UserType userType) {
-        UserType savedType = userTypeService.save(userType);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedType);
+    public ResponseEntity<UserTypeResponseDTO> save(@RequestBody UserTypeRequestDTO dto) {
+        UserType entity = toEntity(dto);
+        UserType saved = userTypeService.save(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(saved));
     }
 
     // PUT - Atualizar (Status 200)
     @PutMapping("/{id}")
-    public ResponseEntity<UserType> update(@PathVariable Long id, @RequestBody UserType userType) {
-        userType.setId(id);
-        UserType updatedType = userTypeService.save(userType);
-        return ResponseEntity.ok(updatedType);
+    public ResponseEntity<UserTypeResponseDTO> update(@PathVariable Long id, @RequestBody UserTypeRequestDTO dto) {
+        UserType entity = toEntity(dto);
+        entity.setId(id); // Garante consistência
+
+        UserType updated = userTypeService.save(entity);
+        return ResponseEntity.ok(toDto(updated));
     }
 
     // DELETE - Deletar (Status 204)
@@ -52,15 +80,23 @@ public class UserTypeController {
         return ResponseEntity.noContent().build();
     }
 
+    // =================================================================================
+    // MÉTODOS DE BUSCA ESPECÍFICOS
+    // =================================================================================
+
     // URL: GET /api/user-types/search/typeName?typeName=ADMIN
     @GetMapping("/search/typeName")
-    public ResponseEntity<List<UserType>> findByTypeName(@RequestParam("typeName") String typeName) {
-        return ResponseEntity.ok(userTypeService.findByTypeName(typeName));
+    public ResponseEntity<List<UserTypeResponseDTO>> findByTypeName(@RequestParam("typeName") String typeName) {
+        List<UserType> list = userTypeService.findByTypeName(typeName);
+        List<UserTypeResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    // URL: GET /api/user-types/search/description?description=Administrador do Sistema
+    // URL: GET /api/user-types/search/description?description=Administrador
     @GetMapping("/search/description")
-    public ResponseEntity<List<UserType>> findByDescription(@RequestParam("description") String description) {
-        return ResponseEntity.ok(userTypeService.findByDescription(description));
+    public ResponseEntity<List<UserTypeResponseDTO>> findByDescription(@RequestParam("description") String description) {
+        List<UserType> list = userTypeService.findByDescription(description);
+        List<UserTypeResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 }

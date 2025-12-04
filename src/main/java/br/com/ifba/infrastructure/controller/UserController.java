@@ -22,10 +22,6 @@ public class UserController {
     private final UserService userService;
     private final ModelMapper modelMapper; // Injeção do Object Mapper
 
-    // =================================================================================
-    // MÉTODOS AUXILIARES DE CONVERSÃO (Para não repetir código)
-    // =================================================================================
-
     private UserResponseDTO toDto(User user) {
         return modelMapper.map(user, UserResponseDTO.class);
     }
