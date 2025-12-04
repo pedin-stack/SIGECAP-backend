@@ -1,6 +1,7 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.Appointer;
+import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.role.DeMolayRole;
 import br.com.ifba.infrastructure.role.StatusRole; // Assumindo que este é o enum do seu campo statusRole
 import br.com.ifba.infrastructure.repository.AppointerRepository;
@@ -19,9 +20,6 @@ public class AppointerService {
         this.appointerRepository = appointerRepository;
     }
 
-    // =================================================================================
-    // 1. CRUD BÁSICO E REGRAS DE CRIAÇÃO
-    // =================================================================================
 
     public List<Appointer> findAll() {
         return appointerRepository.findAll();
@@ -29,14 +27,14 @@ public class AppointerService {
 
     public Appointer findById(Long id) {
         return appointerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Nominata não encontrada com ID: " + id));
+                .orElseThrow(() -> new BusinessException("Nominata não encontrada com ID: " + id));
     }
 
     @Transactional
     public Appointer save(Appointer appointer) {
         // Data de fim não pode ser antes do início
         if (appointer.getStartDate().isAfter(appointer.getEndDate())) {
-            throw new RuntimeException("A data de início não pode ser posterior à data de término.");
+            throw new BusinessException("A data de início não pode ser posterior à data de término.");
         }
 
         if (appointer.getMembers() != null && !appointer.getMembers().isEmpty()) {
@@ -49,7 +47,7 @@ public class AppointerService {
     @Transactional
     public void delete(Long id) {
         if (!appointerRepository.existsById(id)) {
-            throw new RuntimeException("Nominata não encontrada para exclusão.");
+            throw new BusinessException("Nominata não encontrada para exclusão.");
         }
         appointerRepository.deleteById(id);
     }
