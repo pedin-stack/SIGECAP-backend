@@ -23,13 +23,20 @@ public class AttendanceService {
     // Buscar por ID
     public Attendance findById(Long id) {
         return attendanceRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Presença não encontrada com ID: " + id));
+                .orElseThrow(() -> new BusinessException("Attendance não encontrado com ID: " + id));
     }
 
+    // Salvar
+    @Transactional
+    public Attendance save(Attendance attendance) {
+        return attendanceRepository.save(attendance);
+    }
+
+    // Deletar
     @Transactional
     public void delete(Long id) {
         if (!attendanceRepository.existsById(id)) {
-            throw new BusinessException("Presença não encontrada para exclusão.");
+            throw new BusinessException("Attendance não encontrado para exclusão.");
         }
         attendanceRepository.deleteById(id);
     }
