@@ -1,6 +1,7 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.Address;
+import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class AddressService {
 
     public Address findById(Long id) {
         return addressRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado com o ID: " + id));
+                .orElseThrow(() -> new BusinessException("Endereço não encontrado com ID: " + id));
     }
 
 
@@ -52,9 +53,8 @@ public class AddressService {
 
     @Transactional
     public void delete(Long id) {
-
         if (!addressRepository.existsById(id)) {
-            throw new RuntimeException("Não é possível deletar. Endereço não encontrado com o ID: " + id);
+            throw new BusinessException("Endereço não encontrado para exclusão.");
         }
         addressRepository.deleteById(id);
     }
