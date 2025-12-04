@@ -1,6 +1,7 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.Event;
+import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class EventService {
     // Buscar por ID
     public Event findById(Long id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado com ID: " + id));
+                .orElseThrow(() -> new BusinessException("Evento não encontrado com ID: " + id));
     }
 
     // Salvar
@@ -34,7 +35,7 @@ public class EventService {
     @Transactional
     public void delete(Long id) {
         if (!eventRepository.existsById(id)) {
-            throw new RuntimeException("Evento não encontrado para exclusão.");
+            throw new BusinessException("Evento não encontrado para exclusão.");
         }
         eventRepository.deleteById(id);
     }
