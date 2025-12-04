@@ -1,6 +1,7 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.UserType;
+import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.UserTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class UserTypeService {
 
     public UserType findById(Long id) {
         return userTypeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tipo de Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new BusinessException("Tipo de Usuário não encontrado com ID: " + id));
     }
 
     @Transactional
@@ -31,7 +32,7 @@ public class UserTypeService {
     @Transactional
     public void delete(Long id) {
         if (!userTypeRepository.existsById(id)) {
-            throw new RuntimeException("Tipo de Usuário não encontrado para exclusão.");
+            throw new BusinessException("Tipo de Usuário não encontrado para exclusão.");
         }
         userTypeRepository.deleteById(id);
     }
