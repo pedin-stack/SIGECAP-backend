@@ -1,6 +1,7 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.FinancialMovement;
+import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.FinancialMovementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class FinancialMovementService {
 
     public FinancialMovement findById(Long id) {
         return financialMovementRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Movimentação financeira não encontrada com ID: " + id));
+                .orElseThrow(() -> new BusinessException("Movimentação financeira não encontrada com ID: " + id));
     }
 
     @Transactional
@@ -31,7 +32,7 @@ public class FinancialMovementService {
     @Transactional
     public void delete(Long id) {
         if (!financialMovementRepository.existsById(id)) {
-            throw new RuntimeException("Movimentação financeira não encontrada para exclusão.");
+            throw new BusinessException("Movimentação financeira não encontrada para exclusão.");
         }
         financialMovementRepository.deleteById(id);
     }
