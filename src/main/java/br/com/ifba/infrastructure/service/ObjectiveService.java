@@ -1,6 +1,7 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.Objective;
+import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class ObjectiveService {
     // Buscar por ID
     public Objective findById(Long id) {
         return objectiveRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Objetivo não encontrado com ID: " + id));
+                .orElseThrow(() -> new BusinessException("Objetivo não encontrado com ID: " + id));
     }
 
     // Salvar (Criar ou Atualizar)
@@ -35,7 +36,7 @@ public class ObjectiveService {
     @Transactional
     public void delete(Long id) {
         if (!objectiveRepository.existsById(id)) {
-            throw new RuntimeException("Objetivo não encontrado para exclusão.");
+            throw new BusinessException("Objetivo não encontrado para exclusão.");
         }
         objectiveRepository.deleteById(id);
     }
