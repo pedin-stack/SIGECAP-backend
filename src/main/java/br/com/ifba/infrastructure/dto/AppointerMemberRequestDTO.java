@@ -1,11 +1,18 @@
 package br.com.ifba.infrastructure.dto;
 
 import br.com.ifba.infrastructure.role.DeMolayRole;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class AppointerMemberRequestDTO {
-    private Long userId;       // Quem é
-    private Long appointerId;  // A qual gestão pertence (NOVO)
-    private DeMolayRole role;  // Qual o cargo
+
+    @NotNull(message = "O ID do usuário é obrigatório")
+    private Long userId;
+
+    @NotNull(message = "O ID da nominata (gestão) é obrigatório")
+    private Long appointerId;
+
+    @NotNull(message = "O cargo é obrigatório")
+    private DeMolayRole role;
 }
