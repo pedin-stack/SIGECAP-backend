@@ -4,6 +4,7 @@ import br.com.ifba.infrastructure.dto.UserRequestDTO;
 import br.com.ifba.infrastructure.dto.UserResponseDTO;
 import br.com.ifba.infrastructure.entity.User;
 import br.com.ifba.infrastructure.service.UserService;
+import jakarta.validation.Valid; // <--- Importante
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final ModelMapper modelMapper; // Injeção do Object Mapper
+    private final ModelMapper modelMapper;
 
     private UserResponseDTO toDto(User user) {
         return modelMapper.map(user, UserResponseDTO.class);
@@ -30,20 +31,10 @@ public class UserController {
         return modelMapper.map(dto, User.class);
     }
 
-    // =================================================================================
-    // CRUD
-    // =================================================================================
-
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAll() {
-        // 1. Busca lista de Entidades
         List<User> users = userService.findAll();
-
-        // 2. Converte cada Entidade para DTO usando Stream
-        List<UserResponseDTO> dtos = users.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-
+        List<UserResponseDTO> dtos = users.stream().map(this::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
 
@@ -53,37 +44,28 @@ public class UserController {
         return ResponseEntity.ok(toDto(user));
     }
 
+    // Adicionado @Valid
     @PostMapping
-    public ResponseEntity<UserResponseDTO> save(@RequestBody UserRequestDTO dto) {
-        // 1. Converte DTO -> Entidade
+    public ResponseEntity<UserResponseDTO> save(@RequestBody @Valid UserRequestDTO dto) {
         User userEntity = toEntity(dto);
-
-        // 2. Salva no banco (Lógica de negócio)
         User savedUser = userService.save(userEntity);
-
-        // 3. Converte Entidade Salva -> DTO de Resposta (sem senha)
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(savedUser));
     }
 
+    // Adicionado @Valid
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody UserRequestDTO dto) {
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UserRequestDTO dto) {
         User userEntity = toEntity(dto);
-        userEntity.setId(id); // Garante o ID
-
+        userEntity.setId(id);
         User updatedUser = userService.save(userEntity);
         return ResponseEntity.ok(toDto(updatedUser));
     }
 
-    // O Delete não muda nada, pois não retorna corpo
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    // =================================================================================
-    // BUSCAS ESPECÍFICAS
-    // =================================================================================
 
     @GetMapping("/search/email")
     public ResponseEntity<UserResponseDTO> findByEmail(@RequestParam("email") String email) {
