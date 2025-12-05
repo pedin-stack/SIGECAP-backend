@@ -3,6 +3,7 @@ package br.com.ifba.infrastructure.validation;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.*;
+import br.com.ifba.infrastructure.role.ExceptionnRole;
 
 @Documented
 @Constraint(validatedBy = CellphoneValidator.class)
