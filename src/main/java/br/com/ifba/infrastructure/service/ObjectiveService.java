@@ -4,6 +4,8 @@ import br.com.ifba.infrastructure.entity.Objective;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +18,8 @@ public class ObjectiveService {
     private final ObjectiveRepository objectiveRepository;
 
     // Listar todos
-    public List<Objective> findAll() {
-        return objectiveRepository.findAll();
+    public Page<Objective> findAll(Pageable pageable) {
+        return objectiveRepository.findAll(pageable);
     }
 
     // Buscar por ID
