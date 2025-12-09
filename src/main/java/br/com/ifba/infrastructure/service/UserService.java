@@ -1,57 +1,52 @@
 package br.com.ifba.infrastructure.service;
 
 import br.com.ifba.infrastructure.entity.User;
+import br.com.ifba.infrastructure.exception.BusinessException;
+import br.com.ifba.infrastructure.role.ExceptionnRole;
 import br.com.ifba.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import br.com.ifba.infrastructure.exception.BusinessException;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public List<User> findAll() {
-        return userRepository.findAll();
+    
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new BusinessException(ExceptionnRole.USER_NOT_FOUND.getMessage()));
     }
 
     @Transactional
     public User save(User user) {
-
-        if (user.getId() == null) {
-            user.setIsactive(true);
-        }
         return userRepository.save(user);
     }
 
-
     @Transactional
     public void delete(Long id) {
-       //SOFT DELETE
-        User user = findById(id); // O findById já lança BusinessException se não achar
+        User user = findById(id);
         user.setIsactive(false);
         userRepository.save(user);
     }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException("Usuário não encontrado com o email: " + email));
+                .orElseThrow(() -> new BusinessException(ExceptionnRole.USER_NOT_FOUND_EMAIL.getMessage()));
     }
 
-    public List<User> findByStatus(boolean status) {
+    public java.util.List<User> findByStatus(boolean status) {
         return userRepository.findByIsactive(status);
     }
 
-    public List<User> findByUserType(Long typeId) {
+    public java.util.List<User> findByUserType(Long typeId) {
         return userRepository.findByUserTypeId(typeId);
     }
 }
