@@ -4,6 +4,8 @@ import br.com.ifba.infrastructure.entity.Event;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +17,8 @@ public class EventService {
     private final EventRepository eventRepository;
 
     // Listar todos
-    public List<Event> findAll() {
-        return eventRepository.findAll();
+    public Page<Event> findAll(Pageable pageable) {
+        return eventRepository.findAll(pageable);
     }
 
     // Buscar por ID

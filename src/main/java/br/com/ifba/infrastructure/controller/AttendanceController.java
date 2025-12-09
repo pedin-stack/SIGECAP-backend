@@ -9,6 +9,9 @@ import br.com.ifba.infrastructure.service.AttendanceService;
 import jakarta.validation.Valid; // <--- Importante
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,10 +51,8 @@ public class AttendanceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AttendanceResponseDTO>> findAll() {
-        List<Attendance> list = attendanceService.findAll();
-        List<AttendanceResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<AttendanceResponseDTO>> findAll(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(attendanceService.findAll(pageable).map(this::toDto));
     }
 
     @GetMapping("/{id}")

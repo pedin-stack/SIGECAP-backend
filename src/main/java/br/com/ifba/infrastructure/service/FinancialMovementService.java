@@ -4,6 +4,8 @@ import br.com.ifba.infrastructure.entity.FinancialMovement;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.FinancialMovementRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +17,8 @@ public class FinancialMovementService {
 
     private final FinancialMovementRepository financialMovementRepository;
 
-    public List<FinancialMovement> findAll() {
-        return financialMovementRepository.findAll();
+    public Page<FinancialMovement> findAll(Pageable pageable) {
+        return financialMovementRepository.findAll(pageable);
     }
 
     public FinancialMovement findById(Long id) {

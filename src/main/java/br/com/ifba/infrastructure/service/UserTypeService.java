@@ -4,6 +4,8 @@ import br.com.ifba.infrastructure.entity.UserType;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.UserTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +17,8 @@ public class UserTypeService {
 
     private final UserTypeRepository userTypeRepository;
 
-    public List<UserType> findAll() {
-        return userTypeRepository.findAll();
+    public Page<UserType> findAll(Pageable pageable) {
+        return userTypeRepository.findAll(pageable);
     }
 
     public UserType findById(Long id) {

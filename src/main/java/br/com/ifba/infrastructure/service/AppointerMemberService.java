@@ -4,6 +4,8 @@ import br.com.ifba.infrastructure.entity.AppointerMember;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.AppointerMemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +17,8 @@ public class AppointerMemberService {
 
     private final AppointerMemberRepository appointerMemberRepository;
 
-    public List<AppointerMember> findAll() {
-        return appointerMemberRepository.findAll();
+    public Page<AppointerMember> findAll(Pageable pageable) {
+        return appointerMemberRepository.findAll(pageable);
     }
 
     public AppointerMember findById(Long id) {

@@ -8,6 +8,9 @@ import br.com.ifba.infrastructure.service.FinancialMovementService;
 import jakarta.validation.Valid; // <--- Importante
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,10 +46,8 @@ public class FinancialMovementController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FinancialMovementResponseDTO>> findAll() {
-        List<FinancialMovement> list = financialMovementService.findAll();
-        List<FinancialMovementResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<FinancialMovementResponseDTO>> findAll(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(financialMovementService.findAll(pageable).map(this::toDto));
     }
 
     @GetMapping("/{id}")

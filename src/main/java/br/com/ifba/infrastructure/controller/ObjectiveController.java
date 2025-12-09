@@ -8,6 +8,9 @@ import br.com.ifba.infrastructure.service.ObjectiveService;
 import jakarta.validation.Valid; // <--- Importante
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,10 +44,8 @@ public class ObjectiveController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ObjectiveResponseDTO>> findAll() {
-        List<Objective> list = objectiveService.findAll();
-        List<ObjectiveResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<ObjectiveResponseDTO>> findAll(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(objectiveService.findAll(pageable).map(this::toDto));
     }
 
     @GetMapping("/{id}")

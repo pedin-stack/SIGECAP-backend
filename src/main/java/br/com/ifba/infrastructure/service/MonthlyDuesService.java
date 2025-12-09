@@ -4,6 +4,8 @@ import br.com.ifba.infrastructure.entity.MonthlyDues;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.MonthlyDuesRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +18,8 @@ public class MonthlyDuesService {
     private final MonthlyDuesRepository monthlyDuesRepository;
 
     // Listar todos
-    public List<MonthlyDues> findAll() {
-        return monthlyDuesRepository.findAll();
+    public Page<MonthlyDues> findAll(Pageable pageable) {
+        return  monthlyDuesRepository.findAll(pageable);
     }
 
     // Buscar por ID

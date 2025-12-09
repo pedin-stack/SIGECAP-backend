@@ -5,6 +5,8 @@ import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +28,8 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public List<Address> findAll() {
-        return addressRepository.findAll();
+    public Page<Address> findAll(Pageable pageable) {
+        return addressRepository.findAll(pageable);
     }
 
     public Address findById(Long id) {

@@ -9,6 +9,9 @@ import br.com.ifba.infrastructure.service.AppointerService;
 import jakarta.validation.Valid; // <--- Importante
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +39,8 @@ public class AppointerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AppointerResponseDTO>> findAll() {
-        List<Appointer> list = appointerService.findAll();
-        List<AppointerResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<AppointerResponseDTO>> findAll(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(appointerService.findAll(pageable).map(this::toDto));
     }
 
     @GetMapping("/{id}")

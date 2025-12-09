@@ -5,6 +5,8 @@ import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.role.DeMolayRole;
 import br.com.ifba.infrastructure.role.StatusRole; // Assumindo que este é o enum do seu campo statusRole
 import br.com.ifba.infrastructure.repository.AppointerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +23,8 @@ public class AppointerService {
     }
 
 
-    public List<Appointer> findAll() {
-        return appointerRepository.findAll();
+    public Page<Appointer> findAll(Pageable pageable) {
+        return appointerRepository.findAll(pageable);
     }
 
     public Appointer findById(Long id) {

@@ -7,6 +7,9 @@ import br.com.ifba.infrastructure.service.AddressService;
 import jakarta.validation.Valid; // <--- Importante
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +35,9 @@ public class AddressController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AddressResponseDTO>> findAll() {
-        List<Address> addresses = addressService.findAll();
-        List<AddressResponseDTO> dtos = addresses.stream().map(this::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<AddressResponseDTO>> findAll(@PageableDefault(size = 20) Pageable pageable) {
+        Page<Address> page = addressService.findAll(pageable);
+        return ResponseEntity.ok(page.map(this::toDto));
     }
 
     @GetMapping("/{id}")
