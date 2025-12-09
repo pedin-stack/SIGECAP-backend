@@ -4,9 +4,12 @@ import br.com.ifba.infrastructure.dto.UserRequestDTO;
 import br.com.ifba.infrastructure.dto.UserResponseDTO;
 import br.com.ifba.infrastructure.entity.User;
 import br.com.ifba.infrastructure.service.UserService;
-import jakarta.validation.Valid; // <--- Importante
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +35,13 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> findAll() {
-        List<User> users = userService.findAll();
-        List<UserResponseDTO> dtos = users.stream().map(this::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<UserResponseDTO>> findAll(@PageableDefault(size = 20) Pageable pageable) {
+        Page<User> usersPage = userService.findAll(pageable);
+
+        // O objeto Page tem o método .map() nativo para converter
+        Page<UserResponseDTO> dtosPage = usersPage.map(this::toDto);
+
+        return ResponseEntity.ok(dtosPage);
     }
 
     @GetMapping("/{id}")
