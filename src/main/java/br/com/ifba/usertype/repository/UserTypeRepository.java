@@ -1,6 +1,6 @@
-package br.com.ifba.infrastructure.repository;
+package br.com.ifba.usertype.repository;
 
-import br.com.ifba.infrastructure.entity.UserType;
+import br.com.ifba.usertype.entity.UserType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
