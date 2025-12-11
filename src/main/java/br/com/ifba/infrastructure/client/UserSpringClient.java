@@ -1,7 +1,7 @@
 package br.com.ifba.infrastructure.client;
 
-import br.com.ifba.infrastructure.dto.UserRequestDTO;
-import br.com.ifba.infrastructure.dto.UserResponseDTO;
+import br.com.ifba.user.DTO.UserRequestDTO;
+import br.com.ifba.user.DTO.UserResponseDTO;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
