@@ -1,6 +1,7 @@
 package br.com.ifba.event.entity;
 
 
+import br.com.ifba.infrastructure.role.EventRole;
 import br.com.ifba.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,22 +27,13 @@ public class Event extends PersistenceEntity {
     private LocalDateTime date;
 
     @Column(nullable = false)
-    private String local;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
     private LocalDateTime startTime;
 
     @Column(nullable = false)
     private LocalDateTime endTime;
 
     @Column(nullable = false)
-    private StatusRole statusRole;
-
-    @Column(nullable = false)
-    private String eventPics;
+    private EventRole eventRole;
 
     @ManyToMany
     @JoinTable(

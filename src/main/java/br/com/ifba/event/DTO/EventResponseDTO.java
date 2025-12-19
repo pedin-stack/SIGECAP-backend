@@ -1,5 +1,6 @@
 package br.com.ifba.event.DTO;
 
+import br.com.ifba.infrastructure.role.EventRole;
 import br.com.ifba.infrastructure.role.StatusRole;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -9,10 +10,7 @@ public class EventResponseDTO {
     private Long id;
     private String name;
     private LocalDateTime date;
-    private String local;
-    private String description;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private StatusRole statusRole;
-    private String eventPics;
+    private EventRole eventRole ;
 }
