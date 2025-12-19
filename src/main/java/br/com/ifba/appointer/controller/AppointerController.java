@@ -3,7 +3,7 @@ package br.com.ifba.appointer.controller;
 import br.com.ifba.appointer.DTO.AppointerRequestDTO;
 import br.com.ifba.appointer.DTO.AppointerResponseDTO;
 import br.com.ifba.appointer.entity.Appointer;
-import br.com.ifba.infrastructure.role.DeMolayRole;
+import br.com.ifba.infrastructure.role.occupationRole;
 import br.com.ifba.infrastructure.role.StatusRole;
 import br.com.ifba.appointer.service.AppointerService;
 import jakarta.validation.Valid; // <--- Importante
@@ -98,7 +98,7 @@ public class AppointerController {
     @GetMapping("/search/member-role")
     public ResponseEntity<List<AppointerResponseDTO>> findByMemberAndRole(
             @RequestParam("userId") Long userId,
-            @RequestParam("role") DeMolayRole role) {
+            @RequestParam("role") occupationRole role) {
         List<Appointer> list = appointerService.findByMemberAndRole(userId, role);
         List<AppointerResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);

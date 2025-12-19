@@ -1,6 +1,6 @@
 package br.com.ifba.appointermember.DTO;
 
-import br.com.ifba.infrastructure.role.DeMolayRole;
+import br.com.ifba.infrastructure.role.occupationRole;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -14,5 +14,5 @@ public class AppointerMemberRequestDTO {
     private Long appointerId;
 
     @NotNull(message = "O cargo é obrigatório")
-    private DeMolayRole role;
+    private occupationRole role;
 }
