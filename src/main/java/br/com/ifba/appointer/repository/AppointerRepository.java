@@ -1,7 +1,7 @@
 package br.com.ifba.appointer.repository;
 
 import br.com.ifba.appointer.entity.Appointer;
-import br.com.ifba.infrastructure.role.DeMolayRole;
+import br.com.ifba.infrastructure.role.occupationRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,5 +22,5 @@ public interface AppointerRepository extends JpaRepository<Appointer, Long> {
      onde o ID do usuário é X e o Cargo é Y.*/
     @Query("SELECT a FROM Appointer a JOIN a.members m WHERE m.user.id = :userId AND m.role = :role")
     List<Appointer> findByMemberAndRole(@Param("userId") Long userId,
-                                        @Param("role") DeMolayRole role);
+                                        @Param("role") occupationRole role);
 }

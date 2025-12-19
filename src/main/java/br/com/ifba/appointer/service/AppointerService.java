@@ -2,7 +2,7 @@ package br.com.ifba.appointer.service;
 
 import br.com.ifba.appointer.entity.Appointer;
 import br.com.ifba.infrastructure.exception.BusinessException;
-import br.com.ifba.infrastructure.role.DeMolayRole;
+import br.com.ifba.infrastructure.role.occupationRole;
 import br.com.ifba.infrastructure.role.StatusRole; // Assumindo que este é o enum do seu campo statusRole
 import br.com.ifba.appointer.repository.AppointerRepository;
 import org.springframework.data.domain.Page;
@@ -66,7 +66,7 @@ public class AppointerService {
         return appointerRepository.findByEndDate(date);
     }
     //id do usuario que quero + cargo para identifcar se ele ja ocupou tal
-    public List<Appointer> findByMemberAndRole(Long userId, DeMolayRole role) {
+    public List<Appointer> findByMemberAndRole(Long userId, occupationRole role) {
         return appointerRepository.findByMemberAndRole(userId, role);
     }
 
