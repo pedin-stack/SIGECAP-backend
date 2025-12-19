@@ -17,8 +17,7 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "users") // "user" é palavra reservada em alguns bancos
-@PrimaryKeyJoinColumn(name = "person_id")
+@Table(name = "users")
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 public class User extends Person {
@@ -30,19 +29,18 @@ public class User extends Person {
     private String password;
 
     @Column(nullable = false)
-    private boolean isactive;
+    private boolean active;
 
     @ManyToOne
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 
-    // Listas indicadas pelas setas/linhas do diagrama partindo de User ou para User
     @OneToMany(mappedBy = "member")
     private List<MonthlyDues> monthlyDues;
 
-    @OneToMany(mappedBy = "responsible") // Considerando que o usuário é responsável pela movimentação
+    @OneToMany(mappedBy = "responsible")
     private List<FinancialMovement> financialMovements;
 
-    @OneToMany(mappedBy = "creator") // Considerando que o usuário cria o objetivo
+    @OneToMany(mappedBy = "creator")
     private List<Objective> objectives;
 }

@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/user-types")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/user-types")
 @RequiredArgsConstructor
 public class UserTypeController {
 
@@ -70,7 +69,7 @@ public class UserTypeController {
 
     @GetMapping("/search/typeName")
     public ResponseEntity<List<UserTypeResponseDTO>> findByTypeName(@RequestParam("typeName") String typeName) {
-        List<UserType> list = userTypeService.findByTypeName(typeName);
+        List<UserType> list = userTypeService.findByOccupation(typeName);
         List<UserTypeResponseDTO> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos); 
     }

@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -38,7 +37,6 @@ public class UserController {
     public ResponseEntity<Page<UserResponseDTO>> findAll(@PageableDefault(size = 20) Pageable pageable) {
         Page<User> usersPage = userService.findAll(pageable);
 
-        // O objeto Page tem o método .map() nativo para converter
         Page<UserResponseDTO> dtosPage = usersPage.map(this::toDto);
 
         return ResponseEntity.ok(dtosPage);
@@ -49,8 +47,6 @@ public class UserController {
         User user = userService.findById(id);
         return ResponseEntity.ok(toDto(user));
     }
-
-    // Adicionado @Valid
     @PostMapping
     public ResponseEntity<UserResponseDTO> save(@RequestBody @Valid UserRequestDTO dto) {
         User userEntity = toEntity(dto);
@@ -58,13 +54,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(savedUser));
     }
 
-    // Adicionado @Valid
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UserRequestDTO dto) {
-        User userEntity = toEntity(dto);
-        userEntity.setId(id);
-        User updatedUser = userService.save(userEntity);
-        return ResponseEntity.ok(toDto(updatedUser));
+
+        User userAtualizado = userService.update(id, dto);
+
+        return ResponseEntity.ok(toDto(userAtualizado));
     }
 
     @DeleteMapping("/{id}")

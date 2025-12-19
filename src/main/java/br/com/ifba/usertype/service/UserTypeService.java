@@ -39,8 +39,8 @@ public class UserTypeService {
         userTypeRepository.deleteById(id);
     }
 
-    public List<UserType> findByTypeName(String typeName) {
-        return userTypeRepository.findByTypeName(typeName);
+    public List<UserType> findByOccupation(String occupation) {
+        return userTypeRepository.findByDescription(occupation);
     }
 
     public List<UserType> findByDescription(String description) {

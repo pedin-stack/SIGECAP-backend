@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum DeMolayRole {
+public enum occupationRole {
 
     // --- TRÍADE ---
     MASTER_COUNCILOR("Mestre Conselheiro"),
@@ -38,7 +38,9 @@ public enum DeMolayRole {
     FOURTH_PRECEPTOR("4º Preceptor"),
     FIFTH_PRECEPTOR("5º Preceptor"),
     SIXTH_PRECEPTOR("6º Preceptor"),
-    SEVENTH_PRECEPTOR("7º Preceptor");
+    SEVENTH_PRECEPTOR("7º Preceptor"),
+
+    ADVISORY_BOARD_PRESIDENT("Presidente do conselho consultivi");
 
     private final String label;
 }

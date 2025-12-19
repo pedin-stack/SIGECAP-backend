@@ -1,7 +1,7 @@
 package br.com.ifba.usertype.entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import br.com.ifba.infrastructure.role.TypeRole;
+import br.com.ifba.infrastructure.role.occupationRole;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +15,10 @@ import br.com.ifba.infrastructure.entity.persistenceEntity.PersistenceEntity;
 public class UserType extends PersistenceEntity {
 
     @Column(nullable = false)
-    private String typeName;
+    @Enumerated(EnumType.STRING)
+    private TypeRole description ;
 
-    @Column(nullable = false)
-    private String description;
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    private occupationRole  occupation;
 }

@@ -1,9 +1,11 @@
 package br.com.ifba.user.DTO;
 
+import br.com.ifba.infrastructure.role.TypeRole;
 import br.com.ifba.infrastructure.validation.Cellphone;
 import br.com.ifba.infrastructure.validation.Cpf;
 import br.com.ifba.infrastructure.validation.OnlyLetters;
 import br.com.ifba.infrastructure.validation.StrongPassword;
+import br.com.ifba.usertype.entity.UserType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -11,11 +13,8 @@ import java.time.LocalDate;
 @Data
 public class UserRequestDTO {
 
-    // --- DADOS DE PERSON (Herdados na lógica, mas explícitos no DTO) ---
-
     @NotBlank(message = "O nome é obrigatório")
     @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres")
-    @OnlyLetters(message = "O nome não deve conter números ou caracteres especiais") // Custom Annotation
     private String name;
 
     @NotBlank(message = "O CPF é obrigatório")
@@ -28,7 +27,7 @@ public class UserRequestDTO {
 
     @NotBlank(message = "O contato é obrigatório")
     @Cellphone // Custom Annotation (Valida tamanho e dígitos)
-    private String contact;
+    private String phone;
 
     // --- DADOS DE USER ---
 
@@ -41,11 +40,10 @@ public class UserRequestDTO {
     @StrongPassword
     private String password;
 
-    private boolean isactive;
+    private boolean active;
 
     @NotNull(message = "O tipo de usuário é obrigatório")
-    private Long userTypeId;
+     private UserType userType;
 
-    // Opcional: Se você estiver criando o usuário já com endereço
     private Long addressId;
 }
