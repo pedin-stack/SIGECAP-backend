@@ -1,35 +1,29 @@
 package br.com.ifba.person.entity;
 
-import br.com.ifba.address.entity.Address;
-import jakarta.persistence.*;
-
-import java.time.LocalDate;
+import jakarta.persistence.*; // Removeu Inheritence
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import br.com.ifba.infrastructure.entity.persistenceEntity.PersistenceEntity;
 
-@Entity
-@Table(name = "person")
-@Inheritance(strategy = InheritanceType.JOINED)
+import java.time.LocalDate;
+
+@MappedSuperclass // <--- A grande mudança é aqui
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-public class Person extends PersistenceEntity {
+
+public abstract class Person extends PersistenceEntity {
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true) // CPF geralmente é único
     private String cpf;
 
-    @Column(nullable = false)
+    @Column(name = "birth_date", nullable = false) // Boa prática: snake_case no banco
     private LocalDate birthDate;
 
     @Column(nullable = false)
-    private String contact;
-
-    @OneToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private String phone;
 }
